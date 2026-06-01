@@ -1,7 +1,12 @@
 import type {
+  ApiFootballCountriesResponse,
   ApiFootballEnvelope,
+  ApiFootballFixturesResponse,
   ApiFootballLeaguesResponse,
+  ApiFootballPlayersResponse,
+  ApiFootballStandingsResponse,
   ApiFootballStatusResponse,
+  ApiFootballTeamsResponse,
 } from "@/types/api-football";
 
 type FootballFetchOptions = {
@@ -37,6 +42,16 @@ function hasApiErrors<TResponse>(data: ApiFootballEnvelope<TResponse>) {
   return Object.keys(data.errors).length > 0;
 }
 
+function getApiErrorMessage<TResponse>(data: ApiFootballEnvelope<TResponse>) {
+  if (Array.isArray(data.errors)) {
+    return data.errors.join(", ");
+  }
+
+  return Object.entries(data.errors)
+    .map(([key, value]) => `${key}: ${value}`)
+    .join(", ");
+}
+
 export async function footballFetch<TResponse>(
   endpoint: `/${string}`,
   options: FootballFetchOptions = {},
@@ -60,7 +75,9 @@ export async function footballFetch<TResponse>(
   const data = (await response.json()) as ApiFootballEnvelope<TResponse>;
 
   if (hasApiErrors(data)) {
-    throw new Error("API-Football returned an error response.");
+    throw new Error(
+      `API-Football returned an error response: ${getApiErrorMessage(data)}`,
+    );
   }
 
   return data;
@@ -78,4 +95,40 @@ export async function getLeagues() {
 
 export async function getLeagueById(leagueId: number) {
   return footballFetch<ApiFootballLeaguesResponse>(`/leagues?id=${leagueId}`);
+}
+
+export async function getWorldCupFixtures() {
+  return footballFetch<ApiFootballFixturesResponse>(
+    "/fixtures?league=1&season=2026",
+  );
+}
+
+export async function getWorldCup2022Fixtures() {
+  return footballFetch<ApiFootballFixturesResponse>(
+    "/fixtures?league=1&season=2022",
+  );
+}
+
+export async function getStatusAudit() {
+  return footballFetch<ApiFootballStatusResponse>("/status");
+}
+
+export async function getCountriesAudit() {
+  return footballFetch<ApiFootballCountriesResponse>("/countries");
+}
+
+export async function getTeamsAudit() {
+  return footballFetch<ApiFootballTeamsResponse>("/teams?league=1&season=2022");
+}
+
+export async function getPlayersAudit() {
+  return footballFetch<ApiFootballPlayersResponse>(
+    "/players?league=1&season=2022&page=1",
+  );
+}
+
+export async function getStandingsAudit() {
+  return footballFetch<ApiFootballStandingsResponse>(
+    "/standings?league=1&season=2022",
+  );
 }
