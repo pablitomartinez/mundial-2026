@@ -1,0 +1,30 @@
+# Dependencias
+node_modules/
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Builds de Next.js y producción
+/.next/
+/out/
+/build
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Variables de entorno (¡MUY IMPORTANTE!)
+.env*.local
+.env
+.env.development
+.env.production
+
+# Archivos del sistema y editores
+.DS_Store
+*.pem
+.idea/
+.vscode/
